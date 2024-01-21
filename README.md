@@ -1,70 +1,110 @@
-# Getting Started with Create React App
+# Redux
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+```
+Redux is nothing but a state management library.
 
-## Available Scripts
+Reducer:- It is a normal component. Waht it does is it defines the state. 
+For ex:- we need to create state of bat, then the reducer can act as a component to initalise the state. Liek given in provided syntax
+const BatReducer = (state = initialState) => {
+    return state;
+}
+Here we are giving inital state to assign inital value in state
 
-In the project directory, you can run:
 
-### `npm start`
+Store :- We caa create a global store in react with the help of createStore method. In which we can put our reducer. In this way we put reducer in store and in reducer we had initailised a state of bats.
+import { createStore } from 'redux';
+import BatReducer from './batReducer';
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+const store = createStore(BatReducer);
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Now we need to wrap the components who are going to use redux using the provider method and store
+Understand mapStateToProps and connect from Bat.js
+// We can use this function to map the values from global state to the particular functions
+// The state returned can be accessed via props passed in function
+The function name will always be same and it can't be changed
+Basically the value we want from store in component can be taken with the help of mapStateToProps
+const mapStateToProps = (state) => {
+  return {
+    bats: state.bats
+  }
+}
 
-### `npm run build`
+// Connect is a higher order component
+// It gives state to mapStateToProps
+// In connect we run mapStateToProps and then it returns state object
+// the we got that object and called Bat function
+export default connect(mapStateToProps)(Bat)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Action:- Action is nothing but a normal Javascript object.
+Syntax = {
+    type: string, // The action user going to take will be given in type
+    payload: {} //payload is optional
+}
+Example :-
+pass action object in reducer
+const BatReducer = (state = initialState, action) => {
+    switch (action.type) {
+        case 'BUY_BAT':
+            return {
+                ...state,
+                bats: state.bats -1
+            }
+        default:
+            return state;
+    }
+}
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Dispatch :- Dispatch is a fucntion which passes action to reducer and updates the state
+See Bat.js for better understanding
+// mapDispatchTopProps is used when we want to change the state from component
+// Here we declare function in which we call dispatch function
+// Now dispatch function calls our reducer with action and accordingly updates the state from reducer
+// dispatch function is been taken from connect method itself
+// And function uses these method with the help of props
+const mapDispatchToProps = (dispatch) => {
+  return {
+    buyBat: () =>  dispatch({ type: "BUY_BAT" })
+  }
+}
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+// Connect is a higher order component
+// It gives state to mapStateToProps
+// In connect we run mapStateToProps and then it returns state object
+// In connect we run mapDispatchToProps and then it provides dispatch function
+// the we got that object and functions and then called Bat function with props
+export default connect(mapStateToProps, mapDispatchToProps)(Bat)
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+<!-- Combinint reducers -->
+// If there is single reducer then it can be done easily like this
+// const store = createStore(BatReducer, composeWithDevTools());
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+// IF multiple reducers are there then need to use rootReducer
+const store = createStore(rootReducer, composeWithDevTools());
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+<!-- Root Reducer will cobine the reducers in following way -->
+import { combineReducers } from "redux";
+import BatReducer from "./batReducer";
+import BallReducer from "./ballReducer";
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+const rootReducer = combineReducers({
+    bat: BatReducer,
+    ball: BallReducer
+})
 
-## Learn More
+export default rootReducer;
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+<!-- This will also update the state object in following way -->
+{
+    bat: {
+        bats: 50
+    },
+    ball: {
+        balls: 50
+    }
+}
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+<!-- To see how to send payload please cleck Ball.js implementation -->
+```
