@@ -1,6 +1,7 @@
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import BatReducer from './batReducer';
 import rootReducer from './rootReducer';
+import {thunk} from 'redux-thunk'
 
 // This method is used to visualise the redux in devtools
 // Add extension Redux Devtools in your browser to see this
@@ -10,7 +11,7 @@ import {composeWithDevTools} from 'redux-devtools-extension';
 // const store = createStore(BatReducer, composeWithDevTools());
 
 // IF multiple reducers are there then need to use rootReducer
-const store = createStore(rootReducer, composeWithDevTools());
+const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)));
 
 
 
